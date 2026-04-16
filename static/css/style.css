@@ -1,0 +1,410 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #f4f8fc;
+    color: #1e293b;
+}
+
+.page-shell {
+    width: 1180px;
+    margin: 24px auto;
+    background: #ffffff;
+    border: 1px solid #dbe4f0;
+    border-radius: 20px;
+    min-height: 720px;
+    padding: 20px 28px 32px;
+    box-shadow: 0 10px 30px rgba(37, 99, 235, 0.08);
+}
+
+/* top bar */
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0 24px;
+    border-bottom: 1px solid #e6eef8;
+    margin-bottom: 24px;
+}
+
+.logo-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.logo-box img {
+    height: 44px;
+    width: 44px;
+    object-fit: contain;
+    border-radius: 12px;
+}
+
+.top-nav-links {
+    display: flex;
+    gap: 28px;
+}
+
+.top-nav-links a {
+    text-decoration: none;
+    color: #475569;
+    font-size: 15px;
+    font-weight: 600;
+    transition: 0.2s ease;
+}
+
+.top-nav-links a:hover {
+    color: #2563eb;
+}
+
+.user-menu {
+    background: #eff6ff;
+    color: #1d4ed8;
+    padding: 10px 16px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+/* main layout */
+.dashboard-layout {
+    display: flex;
+    gap: 28px;
+}
+
+/* sidebar */
+.sidebar {
+    width: 220px;
+    padding-top: 12px;
+}
+
+.side-link {
+    display: block;
+    text-decoration: none;
+    color: #475569;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: 0.2s ease;
+}
+
+.side-link:hover {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.side-link.active {
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    color: white;
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.18);
+}
+
+.update-btn {
+    margin-top: 18px;
+    width: 100%;
+    padding: 14px 16px;
+    border: none;
+    border-radius: 12px;
+    background: #dbeafe;
+    color: #1d4ed8;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.update-btn:hover {
+    background: #2563eb;
+    color: white;
+}
+
+/* content */
+.main-content {
+    flex: 1;
+}
+
+.search-row {
+    display: flex;
+    width: 520px;
+    margin: 0 auto 30px;
+}
+
+.search-row input {
+    flex: 1;
+    padding: 13px 16px;
+    border: 1px solid #cbd5e1;
+    border-right: none;
+    border-radius: 12px 0 0 12px;
+    outline: none;
+    font-size: 15px;
+    background: #ffffff;
+}
+
+.search-row input:focus {
+    border-color: #93c5fd;
+}
+
+.search-row button {
+    width: 52px;
+    border: 1px solid #2563eb;
+    background: #2563eb;
+    color: white;
+    border-radius: 0 12px 12px 0;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.welcome-title {
+    text-align: center;
+    margin: 0 0 28px;
+    font-size: 34px;
+    color: #0f172a;
+}
+
+/* dashboard columns */
+.content-grid {
+    display: flex;
+    gap: 22px;
+}
+
+.left-column {
+    flex: 1;
+}
+
+.right-column {
+    width: 290px;
+}
+
+/* cards / panels */
+.panel {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+}
+
+.panel h3 {
+    margin: 0 0 14px;
+    font-size: 20px;
+    color: #0f172a;
+}
+
+.panel-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.panel-header-row span {
+    color: #2563eb;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* table */
+.meeting-table {
+    width: 100%;
+    border-collapse: collapse;
+    overflow: hidden;
+    border-radius: 14px;
+    background: #f8fbff;
+    border: 1px solid #dbeafe;
+}
+
+.meeting-table thead {
+    background: #eff6ff;
+}
+
+.meeting-table th,
+.meeting-table td {
+    padding: 14px 16px;
+    text-align: left;
+    font-size: 14px;
+}
+
+.meeting-table th {
+    color: #1d4ed8;
+    font-weight: 700;
+}
+
+.meeting-table tbody tr {
+    border-top: 1px solid #dbeafe;
+}
+
+/* invitation cards */
+.invite-cards {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.invite-card {
+    flex: 1;
+    min-width: 220px;
+    background: #f8fbff;
+    border: 1px solid #dbeafe;
+    border-radius: 16px;
+    padding: 16px;
+}
+
+.invite-card h4 {
+    margin: 0 0 8px;
+    color: #0f172a;
+    font-size: 17px;
+}
+
+.invite-card p {
+    margin: 0;
+    color: #475569;
+    font-size: 14px;
+}
+
+.small-btn {
+    margin-top: 14px;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 10px;
+    background: #2563eb;
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.2s ease;
+}
+
+.small-btn:hover {
+    background: #1d4ed8;
+}
+
+/* notifications */
+.notification-item {
+    padding: 14px 0;
+    border-top: 1px solid #e2e8f0;
+}
+
+.notification-item:first-of-type {
+    margin-top: 8px;
+}
+
+.notification-item p {
+    margin: 0 0 6px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #334155;
+}
+
+.notification-item small {
+    color: #64748b;
+}
+
+/* links inside cards */
+.panel-link {
+    margin: 16px 0 0;
+    text-align: right;
+    color: #2563eb;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.center-link {
+    text-align: center;
+}
+
+/* mini calendar */
+.mini-calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    margin-top: 16px;
+    text-align: center;
+    font-size: 14px;
+    color: #334155;
+}
+
+.mini-calendar div {
+    min-height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mini-calendar div:hover {
+    background: #dbeafe;
+    border-radius: 50%;
+}
+
+/* login page */
+.login-page {
+    min-height: 70vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-card {
+    width: 420px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 36px 32px;
+    box-shadow: 0 12px 30px rgba(37, 99, 235, 0.08);
+}
+
+.login-card h1 {
+    text-align: center;
+    margin-bottom: 28px;
+    color: #0f172a;
+}
+
+.login-card label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #334155;
+}
+
+.login-card input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    margin-bottom: 18px;
+    font-size: 15px;
+}
+
+.login-card input:focus {
+    outline: none;
+    border-color: #60a5fa;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 13px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    color: white;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.login-btn:hover {
+    background: linear-gradient(135deg, #1d4ed8, #2563eb);
+}
+
+.login-links {
+    text-align: center;
+    margin-top: 18px;
+    color: #64748b;
+    font-size: 14px;
+}

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Alerts{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+
+    <main class="main-content">
+        <h1 class="welcome-title">Alerts</h1>
+
+        <section class="panel">
+            <h3>Recent Notifications</h3>
+
+            <div class="notification-item">
+                <p>You have been invited to a new meeting.</p>
+                <small>5 minutes ago</small>
+            </div>
+
+            <div class="notification-item">
+                <p>Your availability has been updated successfully.</p>
+                <small>1 hour ago</small>
+            </div>
+
+            <div class="notification-item">
+                <p>Project Discussion has been moved to Friday.</p>
+                <small>Yesterday</small>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h3>Alert Preferences</h3>
+            <p>Manage how you want to receive reminders and notifications.</p>
+            <button class="small-btn">Manage Settings</button>
+        </section>
+    </main>
+</div>
+{% endblock %}
