@@ -57,6 +57,8 @@ def login():
     return render_template("login.html")
 
 
+
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
@@ -113,6 +115,11 @@ def alerts():
 @app.route("/profile")
 def profile():
     return render_template("profile.html")
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("login"))
 
 
 if __name__ == "__main__":
