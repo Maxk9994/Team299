@@ -408,3 +408,8 @@ body {
     color: #64748b;
     font-size: 14px;
 }
+
+.notification-item.unread {
+    border-left: 4px solid #007bff;
+    background-color: #f5f9ff;
+}

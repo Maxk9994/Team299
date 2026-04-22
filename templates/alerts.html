@@ -11,20 +11,27 @@
         <section class="panel">
             <h3>Recent Notifications</h3>
 
-            <div class="notification-item">
-                <p>You have been invited to a new meeting.</p>
-                <small>5 minutes ago</small>
-            </div>
+            {% if notifications %}
+                {% for notification in notifications %}
+                    <div class="notification-item {% if notification.is_read == 0 %}unread{% endif %}">
+                        
+                        <p>{{ notification.message }}</p>
+                        <small>{{ time_ago(notification.created_at) }}</small>
 
-            <div class="notification-item">
-                <p>Your availability has been updated successfully.</p>
-                <small>1 hour ago</small>
-            </div>
+                        {% if notification.is_read == 0 %}
+                            <form method="POST" action="{{ url_for('mark_read', id=notification.notification_id) }}">
+                                <button type="submit" class="small-btn">Mark as Read</button>
+                            </form>
+                        {% else %}
+                            <small>Read</small>
+                        {% endif %}
 
-            <div class="notification-item">
-                <p>Project Discussion has been moved to Friday.</p>
-                <small>Yesterday</small>
-            </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No notifications yet.</p>
+            {% endif %}
+
         </section>
 
         <section class="panel">
@@ -32,6 +39,7 @@
             <p>Manage how you want to receive reminders and notifications.</p>
             <button class="small-btn">Manage Settings</button>
         </section>
+
     </main>
 </div>
 {% endblock %}

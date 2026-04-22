@@ -14,10 +14,12 @@
             </div>
 
             <nav class="top-nav-links">
-                <a href="{{ url_for('index') }}">Dashboard</a>
+                <a href="{{ url_for('home') }}">Dashboard</a>
                 <a href="{{ url_for('availability') }}">Availability</a>
                 <a href="{{ url_for('meetings') }}">Meetings</a>
-                <a href="{{ url_for('alerts') }}">Alerts</a>
+                <a href="{{ url_for('alerts') }}">
+                    Alerts {% if unread_count > 0 %} ({{ unread_count }}) {% endif %}
+                </a>
                 <a href="{{ url_for('login') }}">Login</a>
                 <a href="{{ url_for('calendar') }}">Calendar</a>
             </nav>
