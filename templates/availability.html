@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Availability{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+   
+
+    <main class="main-content">
+        <h1 class="welcome-title">Availability</h1>
+
+        <section class="panel">
+            <h3>Set Your Weekly Availability</h3>
+            <p>Choose when you are free for meetings and group work.</p>
+        </section>
+
+        <section class="panel">
+            <table class="meeting-table">
+                <thead>
+                    <tr>
+                        <th>Day</th>
+                        <th>Status</th>
+                        <th>Preferred Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Monday</td>
+                        <td>Available</td>
+                        <td>2:00 PM - 6:00 PM</td>
+                    </tr>
+                    <tr>
+                        <td>Tuesday</td>
+                        <td>Busy</td>
+                        <td>Unavailable</td>
+                    </tr>
+                    <tr>
+                        <td>Wednesday</td>
+                        <td>Available</td>
+                        <td>10:00 AM - 4:00 PM</td>
+                    </tr>
+                    <tr>
+                        <td>Thursday</td>
+                        <td>Available</td>
+                        <td>1:00 PM - 5:00 PM</td>
+                    </tr>
+                    <tr>
+                        <td>Friday</td>
+                        <td>Limited</td>
+                        <td>9:00 AM - 12:00 PM</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="panel">
+            <h3>Quick Actions</h3>
+            <button class="small-btn">Edit Availability</button>
+            <button class="small-btn">Sync Calendar</button>
+        </section>
+    </main>
+</div>
+{% endblock %}

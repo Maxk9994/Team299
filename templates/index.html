@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+
+    <main class="main-content">
+        <h1 class="welcome-title">Dashboard</h1>
+
+        <div class="cards-grid">
+
+            <!-- Notifications Card -->
+            <div class="card notifications-card">
+                <div class="card-header">
+                    <h3>Notifications</h3>
+                    <a href="{{ url_for('alerts') }}">View</a>
+                </div>
+
+                {% if notifications %}
+                    {% for notification in notifications %}
+                        <div class="notification-preview {% if notification.is_read == 0 %}unread{% endif %}">
+                            <p>{{ notification.message }}</p>
+                            <small>{{ time_ago(notification.created_at) }}</small>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>No notifications yet.</p>
+                {% endif %}
+
+                <a href="{{ url_for('alerts') }}" class="view-all">View All</a>
+            </div>
+
+            <!-- Example Other Card (keep your existing ones) -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Upcoming Meetings</h3>
+                </div>
+                <p>No meetings scheduled.</p>
+            </div>
+
+        </div>
+    </main>
+
+</div>
+{% endblock %}

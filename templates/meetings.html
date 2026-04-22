@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Meetings{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    
+
+    <main class="main-content">
+        <h1 class="welcome-title">Meetings</h1>
+
+        <section class="panel">
+            <h3>Upcoming Meetings</h3>
+            <table class="meeting-table">
+                <thead>
+                    <tr>
+                        <th>Meeting</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Study Group</td>
+                        <td>March 29</td>
+                        <td>5:00 PM</td>
+                    </tr>
+                    <tr>
+                        <td>Project Discussion</td>
+                        <td>March 30</td>
+                        <td>2:00 PM</td>
+                    </tr>
+                    <tr>
+                        <td>Client Review</td>
+                        <td>April 2</td>
+                        <td>11:00 AM</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="panel">
+            <h3>Meeting Actions</h3>
+            <div class="invite-cards">
+                <div class="invite-card">
+                    <h4>Create Meeting</h4>
+                    <p>Schedule a new group session with your team.</p>
+                    <button class="small-btn">Create</button>
+                </div>
+
+                <div class="invite-card">
+                    <h4>Join Call</h4>
+                    <p>Join your next scheduled online meeting.</p>
+                    <button class="small-btn">Join</button>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+{% endblock %}
