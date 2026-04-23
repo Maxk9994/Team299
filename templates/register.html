@@ -1,28 +1,49 @@
 {% extends "base.html" %}
-
 {% block title %}Register{% endblock %}
 
 {% block content %}
-<div class="login-page">
-    <div class="login-card">
-        <h1>Create Account</h1>
+<div class="dashboard-layout">
+    <main class="main-content">
+        <section class="panel" style="max-width: 500px; margin: 40px auto;">
+            <h1 class="welcome-title">Create Account</h1>
 
-        <form onsubmit="return false;">
-            <label for="full-name">Full Name</label>
-            <input type="text" id="full-name" name="full-name" placeholder="Enter your full name">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
 
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" placeholder="Enter your email">
+            <form method="POST">
+                <div style="margin-bottom: 15px;">
+                    <label for="username">Username</label><br>
+                    <input type="text" id="username" name="username" required>
+                </div>
 
-            <label for="new-password">Password</label>
-            <input type="password" id="new-password" name="new-password" placeholder="Create a password">
+                <div style="margin-bottom: 15px;">
+                    <label for="email">Email</label><br>
+                    <input type="email" id="email" name="email" required>
+                </div>
 
-            <button type="submit" class="login-btn">Register</button>
-        </form>
+                <div style="margin-bottom: 15px;">
+                    <label for="password">Password</label><br>
+                    <input type="password" id="password" name="password" required>
+                </div>
 
-        <div class="login-links">
-            <p>Already have an account? <a href="{{ url_for('login') }}">Log in</a></p>
-        </div>
-    </div>
+                <div style="margin-bottom: 15px;">
+                    <label for="confirm_password">Confirm Password</label><br>
+                    <input type="password" id="confirm_password" name="confirm_password" required>
+                </div>
+
+                <button type="submit" class="small-btn">Register</button>
+            </form>
+
+            <p style="margin-top: 15px;">
+                Already have an account?
+                <a href="{{ url_for('login') }}">Login here</a>
+            </p>
+        </section>
+    </main>
 </div>
 {% endblock %}
