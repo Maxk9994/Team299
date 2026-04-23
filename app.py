@@ -1,4 +1,5 @@
 import sqlite3
+from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -16,6 +17,7 @@ def get_db_connection():
 
 def init_db():
     conn = get_db_connection()
+
     conn.execute("""
         CREATE TABLE IF NOT EXISTS Users (
             UserID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -24,13 +26,77 @@ def init_db():
             PasswordHash TEXT NOT NULL
         )
     """)
+    
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS Notifications (
+            notification_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            message TEXT NOT NULL,
+            type TEXT DEFAULT 'info',
+            is_read INTEGER DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    conn.commit()
+    conn.close()
+
+def create_notification(user_id, message, notif_type="info"):
+    conn = get_db_connection()
+    conn.execute(
+        """
+        INSERT INTO Notifications (user_id, message, type, is_read)
+        VALUES (?, ?, ?, 0)
+        """,
+        (user_id, message, notif_type)
+    )
     conn.commit()
     conn.close()
 
 
+def time_ago(timestamp):
+    now = datetime.now()
+    diff = now - datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
+
+    seconds = int(diff.total_seconds())
+
+    if seconds < 60:
+        return "just now"
+
+    minutes = seconds // 60
+    if minutes < 60:
+        return f"{minutes} minute{'s' if minutes != 1 else ''} ago"
+
+    hours = seconds // 3600
+    if hours < 24:
+        return f"{hours} hour{'s' if hours != 1 else ''} ago"
+
+    days = seconds // 86400
+    return f"{days} day{'s' if days != 1 else ''} ago"
+
+
+@app.context_processor
+def inject_notifications():
+    conn = get_db_connection()
+    unread_count = conn.execute(
+        "SELECT COUNT(*) FROM Notifications WHERE is_read = 0"
+    ).fetchone()[0]
+    conn.close()
+
+    return dict(unread_count=unread_count, time_ago=time_ago)
+
 @app.route("/")
 def index():
-    return render_template("index.html")
+    conn = get_db_connection()
+
+    notifications = conn.execute(
+        "SELECT * FROM Notifications ORDER BY created_at DESC LIMIT 2"
+    ).fetchall()
+
+    conn.close()
+
+    return render_template("index.html", notifications=notifications)
+
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -55,9 +121,6 @@ def login():
         flash("Invalid email or password.")
 
     return render_template("login.html")
-
-
-
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -109,16 +172,60 @@ def meetings():
 
 @app.route("/alerts")
 def alerts():
-    return render_template("alerts.html")
+    conn = get_db_connection()
+
+    notifications = conn.execute(
+        "SELECT * FROM Notifications ORDER BY created_at DESC"
+    ).fetchall()
+
+    unread_count = conn.execute(
+        "SELECT COUNT(*) FROM Notifications WHERE is_read = 0"
+    ).fetchone()[0]
+
+    conn.close()
+
+    return render_template(
+        "alerts.html",
+        notifications=notifications,
+        unread_count=unread_count
+    )
+
+
+@app.route("/mark-read/<int:id>", methods=["POST"])
+def mark_read(id):
+    conn = get_db_connection()
+    conn.execute(
+        "UPDATE Notifications SET is_read = 1 WHERE notification_id = ?",
+        (id,)
+    )
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for("alerts"))
+
 
 
 @app.route("/profile")
 def profile():
     return render_template("profile.html")
 
-@app.route('/calendar')
+
+@app.route("/calendar")
 def calendar():
-    return render_template('calendar.html')
+    return render_template("calendar.html")
+
+
+@app.route("/test-notification")
+def test_notification():
+    create_notification(1, "Database notification working!", "test")
+    return "Notification added!"
+
+
+@app.route("/test-meeting")
+def test_meeting():
+    create_notification(1, "Meeting 'Team Sync' created!", "meeting")
+    return "Meeting + notification created!"
+
 
 @app.route("/logout")
 def logout():
