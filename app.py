@@ -1,5 +1,6 @@
 import sqlite3
 from datetime import datetime
+from functools import wraps
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -7,6 +8,17 @@ app = Flask(__name__)
 app.secret_key = "change-this-secret-key"
 
 DATABASE = "calendar.db"
+
+
+def login_required(view_func):
+    @wraps(view_func)
+    def wrapped_view(*args, **kwargs):
+        if not session.get("user_id"):
+            flash("Please log in to access that page.")
+            return redirect(url_for("login"))
+        return view_func(*args, **kwargs)
+
+    return wrapped_view
 
 
 def get_db_connection():
@@ -77,9 +89,13 @@ def time_ago(timestamp):
 
 @app.context_processor
 def inject_notifications():
+    if not session.get("user_id"):
+        return dict(unread_count=0, time_ago=time_ago)
+
     conn = get_db_connection()
     unread_count = conn.execute(
-        "SELECT COUNT(*) FROM Notifications WHERE is_read = 0"
+        "SELECT COUNT(*) FROM Notifications WHERE user_id = ? AND is_read = 0",
+        (session["user_id"],)
     ).fetchone()[0]
     conn.close()
 
@@ -87,10 +103,20 @@ def inject_notifications():
 
 @app.route("/")
 def index():
+    if not session.get("user_id"):
+        return render_template("landing.html")
+
+    return redirect(url_for("dashboard"))
+
+
+@app.route("/dashboard")
+@login_required
+def dashboard():
     conn = get_db_connection()
 
     notifications = conn.execute(
-        "SELECT * FROM Notifications ORDER BY created_at DESC LIMIT 2"
+        "SELECT * FROM Notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 2",
+        (session["user_id"],)
     ).fetchall()
 
     conn.close()
@@ -161,25 +187,30 @@ def register():
 
 
 @app.route("/availability")
+@login_required
 def availability():
     return render_template("availability.html")
 
 
 @app.route("/meetings")
+@login_required
 def meetings():
     return render_template("meetings.html")
 
 
 @app.route("/alerts")
+@login_required
 def alerts():
     conn = get_db_connection()
 
     notifications = conn.execute(
-        "SELECT * FROM Notifications ORDER BY created_at DESC"
+        "SELECT * FROM Notifications WHERE user_id = ? ORDER BY created_at DESC",
+        (session["user_id"],)
     ).fetchall()
 
     unread_count = conn.execute(
-        "SELECT COUNT(*) FROM Notifications WHERE is_read = 0"
+        "SELECT COUNT(*) FROM Notifications WHERE user_id = ? AND is_read = 0",
+        (session["user_id"],)
     ).fetchone()[0]
 
     conn.close()
@@ -192,11 +223,12 @@ def alerts():
 
 
 @app.route("/mark-read/<int:id>", methods=["POST"])
+@login_required
 def mark_read(id):
     conn = get_db_connection()
     conn.execute(
-        "UPDATE Notifications SET is_read = 1 WHERE notification_id = ?",
-        (id,)
+        "UPDATE Notifications SET is_read = 1 WHERE notification_id = ? AND user_id = ?",
+        (id, session["user_id"])
     )
     conn.commit()
     conn.close()
@@ -206,24 +238,28 @@ def mark_read(id):
 
 
 @app.route("/profile")
+@login_required
 def profile():
     return render_template("profile.html")
 
 
 @app.route("/calendar")
+@login_required
 def calendar():
     return render_template("calendar.html")
 
 
 @app.route("/test-notification")
+@login_required
 def test_notification():
-    create_notification(1, "Database notification working!", "test")
+    create_notification(session["user_id"], "Database notification working!", "test")
     return "Notification added!"
 
 
 @app.route("/test-meeting")
+@login_required
 def test_meeting():
-    create_notification(1, "Meeting 'Team Sync' created!", "meeting")
+    create_notification(session["user_id"], "Meeting 'Team Sync' created!", "meeting")
     return "Meeting + notification created!"
 
 
