@@ -1,4 +1,4 @@
-# Welcome to StackEdit!
+# Welcome to our calendar app!
 
 To use this project you must have git and visual studio with python installed 
 then follow these steps:
