@@ -1,5 +1,6 @@
 import sqlite3
 from datetime import datetime
+from functools import wraps
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -7,6 +8,17 @@ app = Flask(__name__)
 app.secret_key = "change-this-secret-key"
 
 DATABASE = "calendar.db"
+
+
+def login_required(view_func):
+    @wraps(view_func)
+    def wrapped_view(*args, **kwargs):
+        if not session.get("user_id"):
+            flash("Please log in to access that page.")
+            return redirect(url_for("login"))
+        return view_func(*args, **kwargs)
+
+    return wrapped_view
 
 
 def get_db_connection():
@@ -35,6 +47,18 @@ def init_db():
             type TEXT DEFAULT 'info',
             is_read INTEGER DEFAULT 0,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS Availability (
+            AvailabilityID INTEGER PRIMARY KEY AUTOINCREMENT,
+            UserID INTEGER NOT NULL,
+            DayOfWeek TEXT NOT NULL,
+            StartTime TEXT NOT NULL,
+            EndTime TEXT NOT NULL,
+            Status TEXT NOT NULL CHECK(Status IN ('available', 'unavailable')),
+            FOREIGN KEY (UserID) REFERENCES Users(UserID)
         )
     """)
 
@@ -77,9 +101,13 @@ def time_ago(timestamp):
 
 @app.context_processor
 def inject_notifications():
+    if not session.get("user_id"):
+        return dict(unread_count=0, time_ago=time_ago)
+
     conn = get_db_connection()
     unread_count = conn.execute(
-        "SELECT COUNT(*) FROM Notifications WHERE is_read = 0"
+        "SELECT COUNT(*) FROM Notifications WHERE user_id = ? AND is_read = 0",
+        (session["user_id"],)
     ).fetchone()[0]
     conn.close()
 
@@ -87,10 +115,20 @@ def inject_notifications():
 
 @app.route("/")
 def index():
+    if not session.get("user_id"):
+        return render_template("landing.html")
+
+    return redirect(url_for("dashboard"))
+
+
+@app.route("/dashboard")
+@login_required
+def dashboard():
     conn = get_db_connection()
 
     notifications = conn.execute(
-        "SELECT * FROM Notifications ORDER BY created_at DESC LIMIT 2"
+        "SELECT * FROM Notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 2",
+        (session["user_id"],)
     ).fetchall()
 
     conn.close()
@@ -160,26 +198,127 @@ def register():
     return render_template("register.html")
 
 
-@app.route("/availability")
+@app.route("/availability", methods=["GET", "POST"])
+@login_required
 def availability():
-    return render_template("availability.html")
+    days_of_week = [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
+    ]
+    status_options = ["available", "unavailable"]
+
+    if request.method == "POST":
+        day_of_week = request.form.get("day_of_week", "").strip()
+        start_time = request.form.get("start_time", "").strip()
+        end_time = request.form.get("end_time", "").strip()
+        status = request.form.get("status", "").strip().lower()
+
+        if not day_of_week or not start_time or not end_time or not status:
+            flash("All availability fields are required.")
+            return redirect(url_for("availability"))
+
+        if day_of_week not in days_of_week or status not in status_options:
+            flash("Please choose valid availability options.")
+            return redirect(url_for("availability"))
+
+        try:
+            start_dt = datetime.strptime(start_time, "%H:%M")
+            end_dt = datetime.strptime(end_time, "%H:%M")
+        except ValueError:
+            flash("Please enter valid start and end times.")
+            return redirect(url_for("availability"))
+
+        if end_dt <= start_dt:
+            flash("End time must be later than start time.")
+            return redirect(url_for("availability"))
+
+        conn = get_db_connection()
+        conn.execute(
+            """
+            INSERT INTO Availability (UserID, DayOfWeek, StartTime, EndTime, Status)
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (session["user_id"], day_of_week, start_time, end_time, status),
+        )
+        conn.commit()
+        conn.close()
+
+        flash("Availability added successfully.")
+        return redirect(url_for("availability"))
+
+    conn = get_db_connection()
+    availability_records = conn.execute(
+        """
+        SELECT AvailabilityID, DayOfWeek, StartTime, EndTime, Status
+        FROM Availability
+        WHERE UserID = ?
+        ORDER BY
+            CASE DayOfWeek
+                WHEN 'Monday' THEN 1
+                WHEN 'Tuesday' THEN 2
+                WHEN 'Wednesday' THEN 3
+                WHEN 'Thursday' THEN 4
+                WHEN 'Friday' THEN 5
+                WHEN 'Saturday' THEN 6
+                WHEN 'Sunday' THEN 7
+            END,
+            StartTime
+        """,
+        (session["user_id"],),
+    ).fetchall()
+    conn.close()
+
+    return render_template(
+        "availability.html",
+        availability_records=availability_records,
+        days_of_week=days_of_week,
+        status_options=status_options,
+    )
+
+
+@app.route("/availability/delete/<int:availability_id>", methods=["POST"])
+@login_required
+def delete_availability(availability_id):
+    conn = get_db_connection()
+    deleted = conn.execute(
+        "DELETE FROM Availability WHERE AvailabilityID = ? AND UserID = ?",
+        (availability_id, session["user_id"]),
+    )
+    conn.commit()
+    conn.close()
+
+    if deleted.rowcount == 0:
+        flash("Availability record not found.")
+    else:
+        flash("Availability record deleted.")
+
+    return redirect(url_for("availability"))
 
 
 @app.route("/meetings")
+@login_required
 def meetings():
     return render_template("meetings.html")
 
 
 @app.route("/alerts")
+@login_required
 def alerts():
     conn = get_db_connection()
 
     notifications = conn.execute(
-        "SELECT * FROM Notifications ORDER BY created_at DESC"
+        "SELECT * FROM Notifications WHERE user_id = ? ORDER BY created_at DESC",
+        (session["user_id"],)
     ).fetchall()
 
     unread_count = conn.execute(
-        "SELECT COUNT(*) FROM Notifications WHERE is_read = 0"
+        "SELECT COUNT(*) FROM Notifications WHERE user_id = ? AND is_read = 0",
+        (session["user_id"],)
     ).fetchone()[0]
 
     conn.close()
@@ -192,11 +331,12 @@ def alerts():
 
 
 @app.route("/mark-read/<int:id>", methods=["POST"])
+@login_required
 def mark_read(id):
     conn = get_db_connection()
     conn.execute(
-        "UPDATE Notifications SET is_read = 1 WHERE notification_id = ?",
-        (id,)
+        "UPDATE Notifications SET is_read = 1 WHERE notification_id = ? AND user_id = ?",
+        (id, session["user_id"])
     )
     conn.commit()
     conn.close()
@@ -206,24 +346,28 @@ def mark_read(id):
 
 
 @app.route("/profile")
+@login_required
 def profile():
     return render_template("profile.html")
 
 
 @app.route("/calendar")
+@login_required
 def calendar():
     return render_template("calendar.html")
 
 
 @app.route("/test-notification")
+@login_required
 def test_notification():
-    create_notification(1, "Database notification working!", "test")
+    create_notification(session["user_id"], "Database notification working!", "test")
     return "Notification added!"
 
 
 @app.route("/test-meeting")
+@login_required
 def test_meeting():
-    create_notification(1, "Meeting 'Team Sync' created!", "meeting")
+    create_notification(session["user_id"], "Meeting 'Team Sync' created!", "meeting")
     return "Meeting + notification created!"
 
 

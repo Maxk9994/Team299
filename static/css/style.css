@@ -284,6 +284,45 @@ body {
     background: #1d4ed8;
 }
 
+.availability-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 14px;
+    align-items: center;
+    margin-top: 12px;
+}
+
+.availability-form label {
+    font-weight: 600;
+    color: #334155;
+}
+
+.availability-form input,
+.availability-form select {
+    padding: 10px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+.availability-form .small-btn {
+    grid-column: 1 / -1;
+    justify-self: start;
+}
+
+.flash-list {
+    margin: 12px 0;
+}
+
+.flash-message {
+    margin: 0 0 8px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-weight: 600;
+}
+
 /* notifications */
 .notification-item {
     padding: 14px 0;
