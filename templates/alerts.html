@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Alerts{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+
+    <main class="main-content">
+        <h1 class="welcome-title">Alerts</h1>
+
+        <section class="panel">
+            <h3>Recent Notifications</h3>
+
+            {% if notifications %}
+                {% for notification in notifications %}
+                    <div class="notification-item {% if notification.is_read == 0 %}unread{% endif %}">
+                        
+                        <p>{{ notification.message }}</p>
+                        <small>{{ time_ago(notification.created_at) }}</small>
+
+                        {% if notification.is_read == 0 %}
+                            <form method="POST" action="{{ url_for('mark_read', id=notification.notification_id) }}">
+                                <button type="submit" class="small-btn">Mark as Read</button>
+                            </form>
+                        {% else %}
+                            <small>Read</small>
+                        {% endif %}
+
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No notifications yet.</p>
+            {% endif %}
+
+        </section>
+
+        <section class="panel">
+            <h3>Alert Preferences</h3>
+            <p>Manage how you want to receive reminders and notifications.</p>
+            <button class="small-btn">Manage Settings</button>
+        </section>
+
+    </main>
+</div>
+{% endblock %}

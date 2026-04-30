@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    <main class="main-content">
+        <section class="panel" style="max-width: 500px; margin: 40px auto;">
+            <h1 class="welcome-title">Create Account</h1>
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST">
+                <div style="margin-bottom: 15px;">
+                    <label for="username">Username</label><br>
+                    <input type="text" id="username" name="username" required>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label for="email">Email</label><br>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label for="password">Password</label><br>
+                    <input type="password" id="password" name="password" required>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label for="confirm_password">Confirm Password</label><br>
+                    <input type="password" id="confirm_password" name="confirm_password" required>
+                </div>
+
+                <button type="submit" class="small-btn">Register</button>
+            </form>
+
+            <p style="margin-top: 15px;">
+                Already have an account?
+                <a href="{{ url_for('login') }}">Login here</a>
+            </p>
+        </section>
+    </main>
+</div>
+{% endblock %}

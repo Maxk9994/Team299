@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Availability{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    <main class="main-content">
+        <h1 class="welcome-title">Availability</h1>
+
+        <section class="panel">
+            <h3>Add Availability Block</h3>
+            <p>Save your weekly availability for meeting planning.</p>
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="flash-list">
+                        {% for message in messages %}
+                            <p class="flash-message">{{ message }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('availability') }}" class="availability-form">
+                <label for="day_of_week">Day</label>
+                <select id="day_of_week" name="day_of_week" required>
+                    <option value="">Select a day</option>
+                    {% for day in days_of_week %}
+                        <option value="{{ day }}">{{ day }}</option>
+                    {% endfor %}
+                </select>
+
+                <label for="start_time">Start Time</label>
+                <input id="start_time" type="time" name="start_time" required>
+
+                <label for="end_time">End Time</label>
+                <input id="end_time" type="time" name="end_time" required>
+
+                <label for="status">Status</label>
+                <select id="status" name="status" required>
+                    <option value="">Select status</option>
+                    {% for option in status_options %}
+                        <option value="{{ option }}">{{ option|capitalize }}</option>
+                    {% endfor %}
+                </select>
+
+                <button type="submit" class="small-btn">Save Availability</button>
+            </form>
+        </section>
+
+        <section class="panel">
+            <h3>Your Saved Availability</h3>
+            <table class="meeting-table">
+                <thead>
+                    <tr>
+                        <th>Day</th>
+                        <th>Status</th>
+                        <th>Time Range</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if availability_records %}
+                        {% for record in availability_records %}
+                            <tr>
+                                <td>{{ record.DayOfWeek }}</td>
+                                <td>{{ record.Status|capitalize }}</td>
+                                <td>{{ record.StartTime }} - {{ record.EndTime }}</td>
+                                <td>
+                                    <form method="POST" action="{{ url_for('delete_availability', availability_id=record.AvailabilityID) }}">
+                                        <button type="submit" class="small-btn">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="4">No availability records yet.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </section>
+    </main>
+</div>
+{% endblock %}
