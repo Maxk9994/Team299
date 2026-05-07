@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}Friends{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    <main class="main-content">
+        <h1 class="welcome-title">Friends</h1>
+
+        <section class="panel">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="flash-list">
+                        {% for message in messages %}
+                            <p class="flash-message">{{ message }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <h3>Find Users</h3>
+            <form method="GET" action="{{ url_for('friends') }}" class="search-row friends-search-row">
+                <input type="text" name="q" placeholder="Search by username" value="{{ query }}">
+                <button type="submit">Search</button>
+            </form>
+
+            {% if query %}
+                <table class="meeting-table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if search_results %}
+                            {% for user in search_results %}
+                                <tr>
+                                    <td>{{ user.username }}</td>
+                                    <td>{{ user.email }}</td>
+                                    <td>
+                                        {% if user.action_label == "add" %}
+                                            <form method="POST" action="{{ url_for('send_friend_request') }}">
+                                                <input type="hidden" name="target_user_id" value="{{ user.user_id }}">
+                                                <button type="submit" class="small-btn">Add Friend</button>
+                                            </form>
+                                        {% elif user.action_label == "pending" %}
+                                            Pending
+                                        {% else %}
+                                            Connected
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="3">No users found for this search.</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </section>
+
+        <section class="panel">
+            <h3>Incoming Friend Requests</h3>
+            <table class="meeting-table">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if incoming_requests %}
+                        {% for request in incoming_requests %}
+                            <tr>
+                                <td>{{ request.Username }}</td>
+                                <td>{{ request.Email }}</td>
+                                <td>
+                                    <form method="POST" action="{{ url_for('respond_friend_request', connection_id=request.ConnectionID) }}" class="inline-form">
+                                        <button type="submit" name="action" value="accept" class="small-btn">Accept</button>
+                                        <button type="submit" name="action" value="reject" class="small-btn secondary-btn">Reject</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="3">No incoming requests.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </section>
+
+        <section class="panel">
+            <h3>Outgoing Friend Requests</h3>
+            <table class="meeting-table">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if outgoing_requests %}
+                        {% for request in outgoing_requests %}
+                            <tr>
+                                <td>{{ request.Username }}</td>
+                                <td>{{ request.Email }}</td>
+                                <td>Pending</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="3">No outgoing requests.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </section>
+
+        <section class="panel">
+            <h3>Accepted Friends</h3>
+            <table class="meeting-table">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if accepted_friends %}
+                        {% for friend in accepted_friends %}
+                            <tr>
+                                <td>{{ friend.Username }}</td>
+                                <td>{{ friend.Email }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="2">No accepted friends yet.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </section>
+    </main>
+</div>
+{% endblock %}

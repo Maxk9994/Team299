@@ -278,6 +278,8 @@ body {
     cursor: pointer;
     font-weight: 600;
     transition: 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
 }
 
 .small-btn:hover {
@@ -321,6 +323,78 @@ body {
     background: #eff6ff;
     color: #1d4ed8;
     font-weight: 600;
+}
+
+.meeting-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 14px;
+    align-items: center;
+    margin-top: 12px;
+}
+
+.meeting-form label {
+    font-weight: 600;
+    color: #334155;
+}
+
+.meeting-form input,
+.meeting-form textarea {
+    padding: 10px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+.meeting-form textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+.meeting-form .small-btn {
+    grid-column: 1 / -1;
+    justify-self: start;
+}
+
+.meeting-invite-list {
+    grid-column: 1 / -1;
+    border: 1px solid #dbeafe;
+    background: #f8fbff;
+    border-radius: 12px;
+    padding: 12px;
+}
+
+.meeting-invite-list p {
+    margin: 0 0 10px;
+}
+
+.invite-checkbox {
+    display: block;
+    margin-bottom: 8px;
+    color: #334155;
+}
+
+.invite-checkbox input {
+    margin-right: 8px;
+}
+
+.friends-search-row {
+    width: 100%;
+    margin: 0 0 16px;
+}
+
+.inline-form {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.secondary-btn {
+    background: #64748b;
+}
+
+.secondary-btn:hover {
+    background: #475569;
 }
 
 /* notifications */
